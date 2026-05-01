@@ -20,7 +20,11 @@ app.get("/", (req, res) => {
   res.redirect("/api-docs");
 });
 
-const PORT = process.env.PORT || 3069;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 3069;
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
