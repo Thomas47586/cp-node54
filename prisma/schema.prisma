@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model nguoi_dung {
+  nguoi_dung_id Int       @id @default(autoincrement())
+  email         String?   @unique @db.VarChar(255)
+  mat_khau      String?   @db.VarChar(255)
+  ho_ten        String?   @db.VarChar(255)
+  tuoi          Int?
+  anh_dai_dien  String?   @db.VarChar(255)
+
+  hinh_anh      hinh_anh[]
+  binh_luan     binh_luan[]
+  luu_anh       luu_anh[]
+
+  deletedBY     Int       @default(0)
+  isDeleted     Boolean   @default(false)
+  deletedAt     DateTime? @db.Timestamp(0)
+  createdAt     DateTime  @default(now()) @db.Timestamp(0)
+  updatedAT     DateTime  @default(now()) @db.Timestamp(0)
+}
+
+model hinh_anh {
+  hinh_id       Int       @id @default(autoincrement())
+  ten_hinh      String?   @db.VarChar(255)
+  duong_dan     String?   @db.VarChar(255)
+  mo_ta         String?   @db.VarChar(255)
+  nguoi_dung_id Int?
+
+  nguoi_dung    nguoi_dung? @relation(fields: [nguoi_dung_id], references: [nguoi_dung_id], onDelete: NoAction, onUpdate: NoAction)
+  binh_luan     binh_luan[]
+  luu_anh       luu_anh[]
+
+  deletedBY     Int       @default(0)
+  isDeleted     Boolean   @default(false)
+  deletedAt     DateTime? @db.Timestamp(0)
+  createdAt     DateTime  @default(now()) @db.Timestamp(0)
+  updatedAT     DateTime  @default(now()) @db.Timestamp(0)
+
+  @@index([nguoi_dung_id], map: "nguoi_dung_id_idx")
+}
+
+model binh_luan {
+  binh_luan_id   Int       @id @default(autoincrement())
+  nguoi_dung_id  Int?
+  hinh_id        Int?
+  ngay_binh_luan DateTime? @default(now()) @db.Timestamp(0)
+  noi_dung       String?   @db.VarChar(255)
+
+  nguoi_dung     nguoi_dung? @relation(fields: [nguoi_dung_id], references: [nguoi_dung_id], onDelete: NoAction, onUpdate: NoAction)
+  hinh_anh       hinh_anh?   @relation(fields: [hinh_id], references: [hinh_id], onDelete: NoAction, onUpdate: NoAction)
+
+  deletedBY      Int       @default(0)
+  isDeleted      Boolean   @default(false)
+  deletedAt      DateTime? @db.Timestamp(0)
+  createdAt      DateTime  @default(now()) @db.Timestamp(0)
+  updatedAT      DateTime  @default(now()) @db.Timestamp(0)
+
+  @@index([nguoi_dung_id], map: "binh_luan_nguoi_dung_id_idx")
+  @@index([hinh_id], map: "binh_luan_hinh_id_idx")
+}
+
+model luu_anh {
+  nguoi_dung_id  Int
+  hinh_id        Int
+  ngay_luu       DateTime? @default(now()) @db.Timestamp(0)
+
+  nguoi_dung     nguoi_dung @relation(fields: [nguoi_dung_id], references: [nguoi_dung_id], onDelete: NoAction, onUpdate: NoAction)
+  hinh_anh       hinh_anh   @relation(fields: [hinh_id], references: [hinh_id], onDelete: NoAction, onUpdate: NoAction)
+
+  deletedBY      Int       @default(0)
+  isDeleted      Boolean   @default(false)
+  deletedAt      DateTime? @db.Timestamp(0)
+  createdAt      DateTime  @default(now()) @db.Timestamp(0)
+  updatedAT      DateTime  @default(now()) @db.Timestamp(0)
+
+  @@id([nguoi_dung_id, hinh_id])
+  @@index([hinh_id], map: "luu_anh_hinh_id_idx")
+}
